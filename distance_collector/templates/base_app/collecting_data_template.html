@@ -1,1 +1,19 @@
-<textarea rows="5" cols="20"> Sì cazzo, va bene quello  dentro distance_collector </textarea>
+<!DOCTYPE html>
+<head>
+    <title>Distance Collector</title>
+</head>
+<body>
+    <p>Insert Passengers</p>
+    <form method="POST">
+        {% csrf_token %}
+    {{ form_p }}
+        <input type="submit" name="passengers submit">
+    </form>
+    <p>Insert Drivers</p>
+    <form method="POST">
+        {% csrf_token %}
+    {{ form_d }}
+        <input type="submit" name="drivers submit">
+    </form>
+</body>
+</html>
