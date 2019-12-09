@@ -3,6 +3,12 @@
     <title>Distance Collector</title>
 </head>
 <body>
+    <p>Insert Destination</p>
+    <form method="POST">
+        {% csrf_token %}
+    {{ form_destination }}
+        <input type="submit" name="destination submit">
+    </form>
     <p>Insert Passengers</p>
     <form method="POST">
         {% csrf_token %}
@@ -14,6 +20,9 @@
         {% csrf_token %}
     {{ form_d }}
         <input type="submit" name="drivers submit">
+    </form>
+    <form action="http://127.0.0.1:8000/showresult">
+    <input type="submit" value="Calculate" />
     </form>
 </body>
 </html>

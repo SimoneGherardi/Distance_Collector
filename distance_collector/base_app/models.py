@@ -83,3 +83,22 @@ class Trip(models.Model):
 
     def add_driver(self, driver):
         self.drivers.add(driver)
+
+
+class PassengerForm(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    starting_point = models.CharField(max_length=200)
+
+
+class DriverForm(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    starting_point = models.CharField(max_length=200)
+
+
+class DestinationForm(models.Model):
+    address = models.CharField(max_length=200)
+    city = models.CharField(max_length=100)
+    country = models.CharField(max_length=50)
+    zip_code = models.CharField(max_length=20)
