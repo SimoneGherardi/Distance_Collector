@@ -29,6 +29,9 @@ class Car(models.Model):
 class Place(models.Model):
     address = models.CharField(max_length=100)
     coordinates = models.PointField
+    city = models.CharField(max_length=100)
+    country = models.CharField(max_length=50)
+    zip_code = models.CharField(max_length=20)
     # to be defined
 
 #   def __init__(self, address, *args, **kwargs):

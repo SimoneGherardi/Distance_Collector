@@ -3,43 +3,45 @@
     <title>Distance Collector</title>
 </head>
 <body>
-    <p>Insert Destination</p>
-    <form method="POST">
-        {% csrf_token %}
+<p>Insert Destination</p>
+<form method="POST">
+    {% csrf_token %}
     {{ form_destination }}
-        <input type="submit" name="destination submit">
-    </form>
-    {% if destination %}
-            {% for dest in destination %}
-            <p>The destination is: {{ dest.address }}, {{ dest.city }}, {{ dest.zip_code }}, {{ dest.country }}</p>
-            {% endfor %}
-        {% endif %}
-    <p>Insert Passengers</p>
-    <p>
-        {% csrf_token %}
+    <input type="submit" name="destination submit">
+</form>
+{% if destination %}
+    {% for dest in destination %}
+        <p>The destination
+            is: {{ dest.address.data }}, {{ dest.city.data }}, {{ dest.zip_code.data }}, {{ dest.country.data }}</p>
+    {% endfor %}
+{% endif %}
+
+<p>Insert Passengers</p>
+<p>
+    {% csrf_token %}
     {% for passenger in passengers %}
-        <p>{{ passenger.last_name }} {{ passenger.first_name}} from {{ passenger.starting_point }}</p>
+        <p>{{ passenger.last_name }} {{ passenger.first_name }} from {{ passenger.starting_point }}</p>
     {% endfor %}
-    </p>
-    <form method="POST">
-        {% csrf_token %}
+</p>
+<form method="POST">
+    {% csrf_token %}
     {{ form_p }}
-        <input type="submit" name="passengers submit">
-    </form>
-    <p>Insert Drivers</p>
-    <p>
-        {% csrf_token %}
+    <input type="submit" name="passengers submit">
+</form>
+<p>Insert Drivers</p>
+<p>
+    {% csrf_token %}
     {% for driver in drivers %}
-        <p>{{ driver.last_name }} {{ driver.first_name}} from {{ driver.starting_point }}</p>
+        <p>{{ driver.last_name }} {{ driver.first_name }} from {{ driver.starting_point }}</p>
     {% endfor %}
-    </p>
-    <form method="POST">
-        {% csrf_token %}
+</p>
+<form method="POST">
+    {% csrf_token %}
     {{ form_d }}
-        <input type="submit" name="drivers submit">
-    </form>
-    <form action="http://127.0.0.1:8000/showresult">
-    <input type="submit" value="Calculate" />
-    </form>
+    <input type="submit" name="drivers submit">
+</form>
+<form action="http://127.0.0.1:8000/showresult">
+    <input type="submit" value="Calculate"/>
+</form>
 </body>
 </html>
