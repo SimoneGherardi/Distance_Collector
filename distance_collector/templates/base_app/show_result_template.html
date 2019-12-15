@@ -1,8 +1,42 @@
 <!DOCTYPE html>
 <head>
     <title>Showing Results</title>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%
+        }
+
+        td, th
+    </style>
 </head>
 <body>
-   <p> Se si legge sei un figo da paura</p>
+   <h>Distances Matrix in km</h>
+   <table style="width:50%">
+    <tr>
+        <th></th>
+    {% csrf_token %}
+        {% for passenger in passengers %}
+        <th>{{ passenger.last_name }} {{ passenger.first_name}}</th>
+    {% endfor %}
+    </tr>
+    {% csrf_token %}
+
+    <script type=”text/javascript”>
+        i=0;
+        document.body.innerHTML = "{% for driver in drivers %}"
+        document.body.innerHTML = "<script type=”text/javascript”>"
+                i++;
+        document.body.innerHTML = "<tr>"
+        document.body.innerHTML = "<td>{{ driver.last_name }} {{ driver.first_name}}</td>"
+  document.body.innerHTML = "for (j=0; j<p_cols_number; j++)"
+  document.body.innerHTML = “<td>”
+  document.body.innerHTML = "passenger_distances_matrix[j][i])"
+  document.body.innerHTML = “</td>”
+  </tr>
+  {% endfor %}
+</script>
+   </table>
 </body>
 </html>

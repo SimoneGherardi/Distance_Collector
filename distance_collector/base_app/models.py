@@ -1,5 +1,9 @@
+import geopy
 from django.db import models
 from django.contrib.gis.db import models
+from geopy import Point
+from geopy.geocoders import Nominatim
+from geopy.distance import lonlat, distance
 
 
 class Person(models.Model):
@@ -28,24 +32,34 @@ class Car(models.Model):
 
 class Place(models.Model):
     address = models.CharField(max_length=100)
-    coordinates = models.PointField
-    # to be defined
-
-#   def __init__(self, address, *args, **kwargs):
-#       super().__init__(*args, **kwargs)
-#       self.address = address
+    coordinates = geopy.point.Point
+    city = models.CharField(max_length=100, default='')
+    country_code = models.CharField(max_length=2, default='')
+    zip_code = models.CharField(max_length=20, default='')
 
     def set_coordinates(self):
-        return
+
+        geo_locator = Nominatim(user_agent="distance_collector")
+        nom = Nominatim(domain='localhost:8000', scheme='http')
+        my_query = dict({'street': self.address, 'city': self.city, 'postalcode': self.zip_code})
+        nominatim_data = geo_locator.geocode(query=my_query, exactly_one=True, timeout=10, country_codes=self.country_code)
+        if nominatim_data is None:
+            print("Wrong Address Format")
+            return None
+        self.coordinates = nominatim_data.point
+        print(self.coordinates)
+#self.coordinates = Point(latitude=nominatim_data.latitude, longitude=nominatim_data.longitude, altitude=nominatim_data.altitude) # latitude and longitude are in degrees, while altitude is in kilometers
+
+        return self
 
     def calculate_distance(self, place):
-        distance = 42
-        return distance
+        return geopy.distance.distance(self.coordinates, place.coordinates).km
 
 
 class Passenger(Person):
-    starting_point = models.CharField(max_length=100, default='')
-    destination_point = Place
+    starting_point = models.CharField(max_length=200, default='')
+    starting_place = Place
+    destination_place = Place
     time_of_appearance = models.TimeField
     endurance_time = models.DurationField
 
@@ -62,6 +76,17 @@ class Driver(Passenger):
 #   def __init__(self, first_name, last_name, starting_point=None, destination_point=None, *args, **kwargs):
 #       super().__init__(first_name, last_name, starting_point, destination_point, *args, **kwargs)
         # create new Car
+
+
+class Matrix(models.Model):
+    matrix_name = models.CharField(max_length=100)
+
+
+class Cell(models.Model):
+    matrix = models.ForeignKey(Matrix, on_delete=models.CASCADE)
+    row = models.IntegerField()
+    col = models.IntegerField()
+    val = models.FloatField()
 
 
 class Trip(models.Model):
