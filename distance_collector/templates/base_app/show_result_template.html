@@ -8,12 +8,49 @@
             width: 100%
         }
 
-        td, th
+        td, th {
+            border: 1px solid #000000;
+            padding: 8px
+        }
+
+        th {
+            font-weight: bold;
+        }
     </style>
+    <script>
+
+        window.onload = () => {
+            loadTableData('drivers_passengers_table');
+        }
+
+        function loadTableData(table_id)
+        {
+            const tableBody = document.getElementById(table_id);
+            let dataHtml = '';
+            let drivers = {{ drivers }};
+            let passenger_distances_matrix = {{ passenger_matrix }};
+            let cols_number = {{ p_cols_number }};
+            let i=0;
+
+            for(let driver of drivers)
+            {
+                dataHtml += "<tr><td>$(driver.last_name) $(driver.first_name)</td>";
+                for(j=0;j<cols_number;j++)
+                {
+                    dataHtml += "<td>$(passenger_distances_matrix[j][i])</td>";
+                }
+                dataHtml += '</tr>';
+                i++;
+            }
+
+            console.log(dataHtml);
+            tableBody.innerHTML = dataHtml;
+        }
+    </script>
 </head>
 <body>
    <h>Distances Matrix in km</h>
-   <table style="width:50%">
+   <table style="width:50%" id="drivers_passengers_table">
     <tr>
         <th></th>
     {% csrf_token %}
@@ -21,22 +58,6 @@
         <th>{{ passenger.last_name }} {{ passenger.first_name}}</th>
     {% endfor %}
     </tr>
-    {% csrf_token %}
-
-    <script type=”text/javascript”>
-        i=0;
-        document.body.innerHTML = "{% for driver in drivers %}"
-        document.body.innerHTML = "<script type=”text/javascript”>"
-                i++;
-        document.body.innerHTML = "<tr>"
-        document.body.innerHTML = "<td>{{ driver.last_name }} {{ driver.first_name}}</td>"
-  document.body.innerHTML = "for (j=0; j<p_cols_number; j++)"
-  document.body.innerHTML = “<td>”
-  document.body.innerHTML = "passenger_distances_matrix[j][i])"
-  document.body.innerHTML = “</td>”
-  </tr>
-  {% endfor %}
-</script>
    </table>
 </body>
 </html>

@@ -108,7 +108,6 @@ def show_result_view(request):
         for j in range(p_cols_number):
             passenger_matrix[j][i] = Cell(matrix=passenger_distances_matrix, row=i, col=j, val=geodesic(drivers[i].starting_place.coordinates, passengers[j].starting_place.coordinates).km)
             time.sleep(1)
-    print(passenger_matrix)
     for i in range(p_rows_number):
         for j in range(p_cols_number):
             print(passenger_matrix[j][i].val)
@@ -117,4 +116,4 @@ def show_result_view(request):
     d_rows_number = len(drivers)
     d_cols_number = d_rows_number
 
-    return render(request, 'base_app/show_result_template.html', {'passengers': passengers, 'drivers': drivers, 'p_rows_number': p_rows_number, 'p_cols_number': p_cols_number})
+    return render(request, 'base_app/show_result_template.html', {'passengers': passengers, 'drivers': drivers, 'p_rows_number': p_rows_number, 'p_cols_number': p_cols_number, 'passenger_matrix': passenger_matrix})
