@@ -50,6 +50,7 @@
             let destination_distances_matrix = {{ destination_matrix }};
             if (destination_distances_matrix.length === 0)
             {
+                destinationDataHtml += `<tr>No Destination Submitted</tr>`
                 $("#drivers_destination_table").append(destinationDataHtml);
             }
             let i = 0;
