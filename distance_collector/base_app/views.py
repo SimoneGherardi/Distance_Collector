@@ -6,6 +6,7 @@ from geopy.distance import geodesic
 import time
 from .models import *
 from .forms import *
+import json
 from geopy.geocoders import Nominatim
 
 global passengers
@@ -28,25 +29,27 @@ def fill_data_place(place, form):
 
 
 def istanciate_new_passenger(form):
-
-    passenger_to_add = Passenger(first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data['last_name'], starting_point=(form.cleaned_data['address'] + ' , ' + form.cleaned_data['city'] + ' , ' + form.cleaned_data['zip_code'] + ' , ' + form.cleaned_data['country_code']))
+    passenger_to_add = Passenger(first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data['last_name'],
+                                 starting_point=(
+                                         form.cleaned_data['address'] + ' , ' + form.cleaned_data['city'] + ' , ' +
+                                         form.cleaned_data['zip_code'] + ' , ' + form.cleaned_data['country_code']))
     new_starting_place = Place()
     new_starting_place = fill_data_place(new_starting_place, form)
     new_starting_place.set_coordinates()
     passenger_to_add.starting_place = new_starting_place
-#    passenger_to_add.starting_place = fill_data_place(passenger_to_add.starting_place, form)
-#    passenger_to_add.starting_place.set_coordinates(passenger_to_add.starting_place)
     return passenger_to_add
 
 
 def istanciate_new_driver(form):
-    driver_to_add = Driver(first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data['last_name'], starting_point=(form.cleaned_data['address'] + ' , ' + form.cleaned_data['city'] + ' , ' + form.cleaned_data['zip_code'] + ' , ' + form.cleaned_data['country_code']))
+    driver_to_add = Driver(first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data['last_name'],
+                           starting_point=(form.cleaned_data['address'] + ' , ' + form.cleaned_data['city'] + ' , ' +
+                                           form.cleaned_data['zip_code'] + ' , ' + form.cleaned_data['country_code']))
     new_starting_place = Place()
     new_starting_place = fill_data_place(new_starting_place, form)
     new_starting_place.set_coordinates()
     driver_to_add.starting_place = new_starting_place
-#    driver_to_add.starting_place = fill_data_place(driver_to_add.starting_place, form)
-#    driver_to_add.starting_place.set_coordinates(driver_to_add.starting_place)
+    #    driver_to_add.starting_place = fill_data_place(driver_to_add.starting_place, form)
+    #    driver_to_add.starting_place.set_coordinates(driver_to_add.starting_place)
     return driver_to_add
 
 
@@ -58,19 +61,21 @@ def istanciate_new_destination(form):
 
 
 def collecting_data_view(request):
-
     destination_formset = formset_factory(DestinationForm)
     passenger_formset = formset_factory(PassengerForm)
     driver_formset = formset_factory(DriverForm)
 
     if 'destination submit' in request.POST:
         form_destination = destination_formset(request.POST)
+        new_destination = Place
         for form in form_destination:
             if form.is_valid():
-                if destination is not None:
-                    if len(destination) == 1:
-                        print(destination[0].address)
-                        destination.remove(destination[0])
+                new_destination = istanciate_new_destination(form)
+                if new_destination.is_valid is True:
+                    if destination is not None:
+                        if len(destination) == 1:
+                            print(destination[0].address)
+                            destination.remove(destination[0])
                     destination.append(istanciate_new_destination(form))
 
     if 'passengers submit' in request.POST:
@@ -79,7 +84,7 @@ def collecting_data_view(request):
             if form.is_valid():
                 passenger_to_add = istanciate_new_passenger(form)
                 if passenger_to_add not in passengers:
-                    if passenger_to_add.starting_place is not None:
+                    if passenger_to_add.starting_place.is_valid is True:
                         passengers.append(passenger_to_add)
 
     if 'drivers submit' in request.POST:
@@ -88,32 +93,57 @@ def collecting_data_view(request):
             if form.is_valid():
                 driver_to_add = istanciate_new_driver(form)
                 if driver_to_add not in drivers:
-                    if driver_to_add.starting_place is not None:
+                    if driver_to_add.starting_place.is_valid is True:
                         drivers.append(driver_to_add)
 
     form_p = passenger_formset()
     form_d = driver_formset()
     form_destination = destination_formset()
 
-    return render(request, 'base_app/collecting_data_template.html', {'form_p': form_p, 'form_d': form_d, 'form_destination': form_destination, 'passengers': passengers, 'drivers': drivers, 'destination': destination})
+    return render(request, 'base_app/collecting_data_template.html',
+                  {'form_p': form_p, 'form_d': form_d, 'form_destination': form_destination, 'passengers': passengers,
+                   'drivers': drivers, 'destination': destination})
 
 
 def show_result_view(request):
-
-    passenger_distances_matrix = Matrix(matrix_name="passenger_distances_matrix")
+    #   building the passengers_distance_matrix aka passenger_matrix
     p_rows_number = len(drivers)
     p_cols_number = len(passengers)
-    passenger_matrix = [[0 for x in range(p_cols_number)] for y in range(p_rows_number)]
+    i = 0;
+    j = 0;
+    passenger_matrix = [[0 for x in range(p_rows_number)] for y in range(p_cols_number)]
     for i in range(p_rows_number):
         for j in range(p_cols_number):
-            passenger_matrix[j][i] = Cell(matrix=passenger_distances_matrix, row=i, col=j, val=geodesic(drivers[i].starting_place.coordinates, passengers[j].starting_place.coordinates).km)
+            passenger_matrix[j][i] = geodesic(drivers[i].starting_place.coordinates,
+                                              passengers[j].starting_place.coordinates).km
             time.sleep(1)
     for i in range(p_rows_number):
         for j in range(p_cols_number):
-            print(passenger_matrix[j][i].val)
+            print(passenger_matrix[j][i])
 
-    drivers_distances_matrix = Matrix(matrix_name="drivers_distances_matrix")
-    d_rows_number = len(drivers)
-    d_cols_number = d_rows_number
+    # il problema è che passi un oggetto Django al template ed in esso lo metti così com'é. Io l'ho convertito in un
+    #   json e poi messo in una stringa. Siccome ce ne sono diversi, li ho messi tutti in una stringa lunga.
+    #   Chiaramente questo approccio fa schifo al cazzo.
 
-    return render(request, 'base_app/show_result_template.html', {'passengers': passengers, 'drivers': drivers, 'p_rows_number': p_rows_number, 'p_cols_number': p_cols_number, 'passenger_matrix': passenger_matrix})
+    # building the destination_distance_matrix aka the distance_matrix
+    if len(destination) == 1:
+        destination_matrix = [[0 for x in range(p_rows_number)] for y in range(2)]
+        for i in range(p_rows_number):
+            for j in range(1):
+                destination_matrix[j][i] = geodesic(drivers[i].starting_place.coordinates,
+                                                    destination[0].coordinates).km
+                time.sleep(1)
+    else:
+        destination_matrix = []
+
+    drivers_json_str = "["
+    for driver in drivers:
+        drivers_json_str += json.dumps(driver.to_json())
+        drivers_json_str += ','
+    drivers_json_str = drivers_json_str[:-1]
+    drivers_json_str += "]"
+
+    return render(request, 'base_app/show_result_template.html',
+                  {'passengers': passengers, 'drivers': str(drivers_json_str), 'p_rows_number': p_rows_number,
+                   'p_cols_number': p_cols_number, "destination": destination, 'passenger_matrix': passenger_matrix,
+                   'destination_matrix': destination_matrix})

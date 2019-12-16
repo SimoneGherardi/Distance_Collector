@@ -11,6 +11,7 @@ class Person(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
 
+
 #    def __init__(self, first_name, last_name, *args, **kwargs):
 #        super().__init__(*args, **kwargs)
 #        self.first_name = first_name
@@ -22,6 +23,7 @@ class Car(models.Model):
     car_name = models.CharField(max_length=50)
     fuel_type = models.CharField(max_length=50)
     fuel_consumption = models.FloatField
+
 
 #   def __init__(self, car_name, fuel_type, fuel_consumption, *args, **kwargs):
 #       super().__init__(*args, **kwargs)
@@ -36,19 +38,22 @@ class Place(models.Model):
     city = models.CharField(max_length=100, default='')
     country_code = models.CharField(max_length=2, default='')
     zip_code = models.CharField(max_length=20, default='')
+    is_valid = models.BooleanField = True
 
     def set_coordinates(self):
-
         geo_locator = Nominatim(user_agent="distance_collector")
         nom = Nominatim(domain='localhost:8000', scheme='http')
         my_query = dict({'street': self.address, 'city': self.city, 'postalcode': self.zip_code})
-        nominatim_data = geo_locator.geocode(query=my_query, exactly_one=True, timeout=10, country_codes=self.country_code)
+        nominatim_data = geo_locator.geocode(query=my_query, exactly_one=True, timeout=10,
+                                             country_codes=self.country_code)
         if nominatim_data is None:
             print("Wrong Address Format")
+            self.is_valid = False
             return None
         self.coordinates = nominatim_data.point
         print(self.coordinates)
-#self.coordinates = Point(latitude=nominatim_data.latitude, longitude=nominatim_data.longitude, altitude=nominatim_data.altitude) # latitude and longitude are in degrees, while altitude is in kilometers
+        # self.coordinates = Point(latitude=nominatim_data.latitude, longitude=nominatim_data.longitude,
+        # altitude=nominatim_data.altitude) # latitude and longitude are in degrees, while altitude is in kilometers
 
         return self
 
@@ -63,6 +68,7 @@ class Passenger(Person):
     time_of_appearance = models.TimeField
     endurance_time = models.DurationField
 
+
 #   def __init__(self, first_name, last_name, starting_point=None, destination_point=None, *args, **kwargs):
 #       super().__init__(first_name, last_name, *args, **kwargs)
 #       self.starting_point = starting_point
@@ -73,20 +79,14 @@ class Driver(Passenger):
     car = Car
     is_driving = models.BooleanField
 
+    #better use Serializer
+    def to_json(self):
+        return {"last_name": self.last_name, "first_name": self.first_name}
+
+
 #   def __init__(self, first_name, last_name, starting_point=None, destination_point=None, *args, **kwargs):
 #       super().__init__(first_name, last_name, starting_point, destination_point, *args, **kwargs)
-        # create new Car
-
-
-class Matrix(models.Model):
-    matrix_name = models.CharField(max_length=100)
-
-
-class Cell(models.Model):
-    matrix = models.ForeignKey(Matrix, on_delete=models.CASCADE)
-    row = models.IntegerField()
-    col = models.IntegerField()
-    val = models.FloatField()
+# create new Car
 
 
 class Trip(models.Model):
@@ -97,15 +97,14 @@ class Trip(models.Model):
     date = models.DateField
     arrival_time = models.TimeField
 
-#   def __init__(self, destination, date, arrival_time,  *args, **kwargs):
-#       super().__init__(*args, **kwargs)
-#       self.destination = destination
-#       self.date = date
-#       self.arrival_time = arrival_time
+    #   def __init__(self, destination, date, arrival_time,  *args, **kwargs):
+    #       super().__init__(*args, **kwargs)
+    #       self.destination = destination
+    #       self.date = date
+    #       self.arrival_time = arrival_time
 
     def add_passenger(self, passenger):
         self.passengers.add(passenger)
 
     def add_driver(self, driver):
         self.drivers.add(driver)
-

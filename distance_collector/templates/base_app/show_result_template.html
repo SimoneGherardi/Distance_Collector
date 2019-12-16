@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <head>
     <title>Showing Results</title>
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
     <style>
         table {
             font-family: arial, sans-serif;
@@ -12,42 +16,80 @@
             border: 1px solid #000000;
             padding: 8px;
             font-weight: bold;
+            text-transform: capitalize;
         }
     </style>
     <script>
-
-            let tableBody = document.getElementById('drivers_passengers_table');
-            let dataHtml = '';
-            let drivers = {{ drivers }};
+        $(document).ready(function () {
+            let passengersDataHtml = '';
+            let drivers = {{ drivers|safe }};
             let passenger_distances_matrix = {{ passenger_matrix }};
             let cols_number = {{ p_cols_number }};
-            let i=0;
-            let j=0;
-            for(let driver of drivers)
-            {
-                dataHtml += `<tr><td> ${driver.last_name} ${driver.first_name}</td>`;
-                for(j=0;j<cols_number;j++)
-                {
-                    dataHtml += `<td>${passenger_distances_matrix[j][i].val}</td>`;
+            let i = 0;
+            let j = 0;
+            console.log(drivers);
+            console.log(passenger_distances_matrix);
+            console.log(cols_number);
+
+            for (let driver of drivers) {
+                passengersDataHtml += `<tr><td> ${driver["last_name"]} ${driver["first_name"]}</td>`;
+                for (j = 0; j < cols_number; j++) {
+                    passengersDataHtml += `<td>${passenger_distances_matrix[j][i]}</td>`;
                 }
-                dataHtml += '</tr>';
+                passengersDataHtml += '</tr>';
                 i++;
             }
 
-            console.log(dataHtml);
-            tableBody.innerHTML = dataHtml;
+            console.log(passengersDataHtml);
+            $("#drivers_passengers_table").append(passengersDataHtml);
+        });
+
+        $(document).ready(function () {
+            let destinationDataHtml = '';
+            let drivers = {{ drivers|safe }};
+            let destination_distances_matrix = {{ destination_matrix }};
+            if (destination_distances_matrix.length === 0)
+            {
+                $("#drivers_destination_table").append(destinationDataHtml);
+            }
+            let i = 0;
+            let j = 0;
+            console.log(drivers);
+            console.log(destination_distances_matrix);
+
+           for (let driver of drivers) {
+                destinationDataHtml += `<tr><td> ${driver["last_name"]} ${driver["first_name"]}</td>`;
+                for (j = 0; j < 1; j++) {
+                    destinationDataHtml += `<td>${destination_distances_matrix[j][i]}</td>`;
+                }
+                destinationDataHtml += '</tr>';
+                i++;
+            }
+            console.log(destinationDataHtml);
+           $("#drivers_destination_table").append(destinationDataHtml);
+        });
     </script>
 </head>
 <body>
-   <h>Distances Matrix in km</h>
-   <table style="width:50%" id="drivers_passengers_table">
-    <tr>
-        <th></th>
-    {% csrf_token %}
+<h></h>
+<table style="width:50%" id="drivers_passengers_table">
+    <tr1>
+        <th>Drivers/Passengers distances in km</th>
+        {% csrf_token %}
         {% for passenger in passengers %}
-        <th>{{ passenger.last_name }} {{ passenger.first_name}}</th>
-    {% endfor %}
-    </tr>
-   </table>
+            <th>{{ passenger.last_name }} {{ passenger.first_name }}</th>
+        {% endfor %}
+    </tr1>
+</table>
+<br>
+<table style="width:50%" id="drivers_destination_table">
+    <tr1>
+        <th>Drivers/Destination distances in km</th>
+            {% csrf_token %}
+        {% for dest in destination %}
+            <th>{{ dest.address }} {{ dest.city }} {{ dest.zip_code }} {{ dest.country_code }}</th>
+        {% endfor %}
+    </tr1>
+</table>
 </body>
 </html>
