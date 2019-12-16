@@ -10,34 +10,25 @@
 
         td, th {
             border: 1px solid #000000;
-            padding: 8px
-        }
-
-        th {
+            padding: 8px;
             font-weight: bold;
         }
     </style>
     <script>
 
-        window.onload = () => {
-            loadTableData('drivers_passengers_table');
-        }
-
-        function loadTableData(table_id)
-        {
-            const tableBody = document.getElementById(table_id);
+        const tableBody = document.getElementById('drivers_passengers_table');
             let dataHtml = '';
             let drivers = {{ drivers }};
             let passenger_distances_matrix = {{ passenger_matrix }};
             let cols_number = {{ p_cols_number }};
             let i=0;
-
+            let j=0;
             for(let driver of drivers)
             {
-                dataHtml += "<tr><td>$(driver.last_name) $(driver.first_name)</td>";
+                dataHtml += `<tr><td> ${driver.last_name} ${driver.first_name}</td>`;
                 for(j=0;j<cols_number;j++)
                 {
-                    dataHtml += "<td>$(passenger_distances_matrix[j][i])</td>";
+                    dataHtml += `<td>${passenger_distances_matrix[j][i].val}</td>`;
                 }
                 dataHtml += '</tr>';
                 i++;
@@ -45,7 +36,6 @@
 
             console.log(dataHtml);
             tableBody.innerHTML = dataHtml;
-        }
     </script>
 </head>
 <body>
