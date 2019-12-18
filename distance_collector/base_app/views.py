@@ -64,7 +64,7 @@ def collecting_data_view(request):
     destination_formset = formset_factory(DestinationForm)
     passenger_formset = formset_factory(PassengerForm)
     driver_formset = formset_factory(DriverForm)
-
+    error = False
     if 'destination submit' in request.POST:
         form_destination = destination_formset(request.POST)
         new_destination = Place
@@ -77,7 +77,8 @@ def collecting_data_view(request):
                             print(destination[0].address)
                             destination.remove(destination[0])
                     destination.append(istanciate_new_destination(form))
-
+                else:
+                    error = True
     if 'passengers submit' in request.POST:
         form_p = passenger_formset(request.POST)
         for form in form_p:
@@ -86,7 +87,8 @@ def collecting_data_view(request):
                 if passenger_to_add not in passengers:
                     if passenger_to_add.starting_place.is_valid is True:
                         passengers.append(passenger_to_add)
-
+                    else:
+                        error = True
     if 'drivers submit' in request.POST:
         form_d = driver_formset(request.POST)
         for form in form_d:
@@ -95,43 +97,39 @@ def collecting_data_view(request):
                 if driver_to_add not in drivers:
                     if driver_to_add.starting_place.is_valid is True:
                         drivers.append(driver_to_add)
-
+                    else:
+                        error = True
     form_p = passenger_formset()
     form_d = driver_formset()
     form_destination = destination_formset()
-
     return render(request, 'base_app/collecting_data_template.html',
                   {'form_p': form_p, 'form_d': form_d, 'form_destination': form_destination, 'passengers': passengers,
-                   'drivers': drivers, 'destination': destination})
+                   'drivers': drivers, 'destination': destination, 'error': error})
 
 
 def show_result_view(request):
     #   building the passengers_distance_matrix aka passenger_matrix
     p_rows_number = len(drivers)
     p_cols_number = len(passengers)
-    i = 0;
-    j = 0;
+    i = 0
+    j = 0
     passenger_matrix = [[0 for x in range(p_rows_number)] for y in range(p_cols_number)]
     for i in range(p_rows_number):
         for j in range(p_cols_number):
-            passenger_matrix[j][i] = geodesic(drivers[i].starting_place.coordinates,
-                                              passengers[j].starting_place.coordinates).km
+            passenger_matrix[j][i] = round(geodesic(drivers[i].starting_place.coordinates,
+                                                    passengers[j].starting_place.coordinates).km, 4)
             time.sleep(1)
     for i in range(p_rows_number):
         for j in range(p_cols_number):
             print(passenger_matrix[j][i])
-
-    # il problema è che passi un oggetto Django al template ed in esso lo metti così com'é. Io l'ho convertito in un
-    #   json e poi messo in una stringa. Siccome ce ne sono diversi, li ho messi tutti in una stringa lunga.
-    #   Chiaramente questo approccio fa schifo al cazzo.
 
     # building the destination_distance_matrix aka the distance_matrix
     if len(destination) == 1:
         destination_matrix = [[0 for x in range(p_rows_number)] for y in range(2)]
         for i in range(p_rows_number):
             for j in range(1):
-                destination_matrix[j][i] = geodesic(drivers[i].starting_place.coordinates,
-                                                    destination[0].coordinates).km
+                destination_matrix[j][i] = round(geodesic(drivers[i].starting_place.coordinates,
+                                                          destination[0].coordinates).km, 4)
                 time.sleep(1)
     else:
         destination_matrix = []

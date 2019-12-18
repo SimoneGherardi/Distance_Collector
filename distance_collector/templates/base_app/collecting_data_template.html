@@ -22,6 +22,7 @@
     <h>Insert Destination</h>
     <br><br>
     <form method="POST">
+        <p>In field "Address", insert only the street name and number</p>
         {% csrf_token %}
     {{ form_destination }}
         <input type="submit" name="destination submit">
@@ -43,7 +44,7 @@
     </p>
     <form method="POST">
         <p>In field "Address", insert only the street name and number</p>
-        <p>The "Country Code" should be the ISO 3166-1alpha2 code, e.g. it for Italy<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"> click here </a> for more details</p>
+        <p>The "Country Code" should be the ISO 3166-1alpha2 code, e.g. it for Italy<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank"> click here </a> for more details</p>
         {% csrf_token %}
             <p>{{ form_p }}</p>
         <input name="passengers submit" value="Submit" type="submit" >
@@ -59,7 +60,7 @@
     </p>
     <form method="POST">
         <p>In field "Address", insert only the street name and number</p>
-        <p>The "Country Code" should be the ISO 3166-1alpha2 code, e.g. it for Italy<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2"> click here </a> for more details</p>
+        <p>The "Country Code" should be the ISO 3166-1alpha2 code, e.g. it for Italy<a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank"> click here </a> for more details</p>
         {% csrf_token %}
             <p>{{ form_d }}</p>
         <input name="drivers submit" value="Submit" type="submit" >

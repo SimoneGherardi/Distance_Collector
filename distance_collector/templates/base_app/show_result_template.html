@@ -34,7 +34,7 @@
             for (let driver of drivers) {
                 passengersDataHtml += `<tr><td> ${driver["last_name"]} ${driver["first_name"]}</td>`;
                 for (j = 0; j < cols_number; j++) {
-                    passengersDataHtml += `<td>${passenger_distances_matrix[j][i]}</td>`;
+                    passengersDataHtml += `<td>${passenger_distances_matrix[j][i]} km</td>`;
                 }
                 passengersDataHtml += '</tr>';
                 i++;
@@ -61,7 +61,7 @@
            for (let driver of drivers) {
                 destinationDataHtml += `<tr><td> ${driver["last_name"]} ${driver["first_name"]}</td>`;
                 for (j = 0; j < 1; j++) {
-                    destinationDataHtml += `<td>${destination_distances_matrix[j][i]}</td>`;
+                    destinationDataHtml += `<td>${destination_distances_matrix[j][i]} km</td>`;
                 }
                 destinationDataHtml += '</tr>';
                 i++;
